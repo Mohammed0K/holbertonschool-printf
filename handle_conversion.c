@@ -44,7 +44,7 @@ int handle_conversion(char specifier, va_list args)
 			break;
 		default:
 			count = handle_default(specifier);
-			beark;
+			break;
 	}
 	return (count);
 }
