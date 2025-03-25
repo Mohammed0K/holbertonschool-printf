@@ -20,4 +20,5 @@ int handle_conversion(char specifier, va_list args);
 int print_char(va_list args);
 int print_str(va_list args);
 int handle_default(char specifier);
+int print_binary(unsigned int n);
 #endif
