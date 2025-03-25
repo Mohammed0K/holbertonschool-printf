@@ -1,0 +1,28 @@
+#include "main.h"
+
+/**
+ * print_hex - Prints an unsigned integer in hexadecimal notation.
+ * @n: The unsigned integer.
+ * @uppercase: 0 for lowercase, 1 for uppercase.
+ *
+ * Return: Number of characters printed.
+ */
+int print_hex(unsigned int n, int uppercase)
+{
+	int count = 0;
+	char digit;
+
+	if (n / 16)
+		count += print_hex(n / 16, uppercase);
+	if (n % 16 < 10)
+		digit = (n % 16) + '0';
+	else
+	{
+		if (uppercase)
+			digit = (n % 16) - 10 + 'A';
+		else
+			digit = (n % 16) - 10 + 'a';
+	}
+	write(1, &digit, 1);
+	return (count + 1);
+}
