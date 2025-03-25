@@ -39,14 +39,11 @@ int handle_conversion(char specifier, va_list args)
 		case 'p':
 			count = print_pointer(va_arg(args, void *));
 			break;
-		default:
-			count = handle_default(specifier);
-			break;
 		case 'b':
 			count = print_binary(va_arg(args, unsigned int));
 			break;
 		default:
-			count = handle_deafault(specifier);
+			count = handle_default(specifier);
 			beark;
 	}
 	return (count);
