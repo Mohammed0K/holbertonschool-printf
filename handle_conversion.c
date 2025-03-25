@@ -42,7 +42,7 @@ int handle_conversion(char specifier, va_list args)
 		default:
 			count = handle_default(specifier);
 			break;
-		case 'b';
+		case 'b':
 			count = print_binary(va_arg(args, unsigned int));
 			break;
 		default:
