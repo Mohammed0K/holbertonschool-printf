@@ -6,17 +6,16 @@
  *
  * Return: Total number of characters printed, or -1 on error.
  */
-int process_format(const char *format, va_list *args)
+int process_format(const char *format, va_list args)
 {
 	int i = 0, count = 0, printed;
 	char buffer[1024];
 	int buff_index = 0;
-
+	
 	while (format[i])
 	{
 		if (format[i] == '%')
 		{
-			/* Flush the buffer before handling conversion */
 			if (buff_index > 0)
 			{
 				write(1, buffer, buff_index);
@@ -44,6 +43,5 @@ int process_format(const char *format, va_list *args)
 	}
 	if (buff_index > 0)
 		write(1, buffer, buff_index);
-
 	return (count);
 }
