@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <stdio.h>
 
-/* Function Prototypes */
 int print_unsigned_number(unsigned int n);
 int print_number(int n);
 int print_octal(unsigned int n);
@@ -16,8 +15,6 @@ int print_pointer(void *ptr);
 int process_format(const char *format, va_list *args);
 int _printf(const char *format, ...);
 int handle_conversion(char specifier, va_list *args);
-
-/* Prototypes for helper functions */
 int print_char(va_list args);
 int print_str(va_list args);
 int handle_default(char specifier);
