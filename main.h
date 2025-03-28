@@ -15,6 +15,7 @@ int print_pointer(void *ptr);
 int process_format(const char *format, va_list *args);
 int _printf(const char *format, ...);
 int handle_conversion(char specifier, va_list *args);
+
 int print_char(va_list args);
 int print_str(va_list args);
 int handle_default(char specifier);
