@@ -4,7 +4,7 @@
  * print_unsigned_number - Prints an unsigned integer.
  * @n: The unsigned integer to print.
  *
- * Return: Number of digits printed.
+ * Return: The number of digits printed.
  */
 int print_unsigned_number(unsigned int n)
 {
@@ -14,6 +14,6 @@ int print_unsigned_number(unsigned int n)
 	if (n / 10)
 		count += print_unsigned_number(n / 10);
 	digit = (n % 10) + '0';
-	write(1, &digit, 1);
+	buffered_putchar(digit);
 	return (count + 1);
 }

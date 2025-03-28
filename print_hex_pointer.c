@@ -1,10 +1,10 @@
 #include "main.h"
 
 /**
- * print_hex_pointer - Helper function to print hexadecimal.
+ * print_hex_pointer - Helper function to print a hexadecimal value.
  * @n: The unsigned integer representing the pointer.
  *
- * Return: Number of characters printed.
+ * Return: The number of characters printed.
  */
 int print_hex_pointer(uintptr_t n)
 {
@@ -17,6 +17,6 @@ int print_hex_pointer(uintptr_t n)
 		digit = (n % 16) + '0';
 	else
 		digit = (n % 16) - 10 + 'a';
-	write(1, &digit, 1);
+	buffered_putchar(digit);
 	return (count + 1);
 }

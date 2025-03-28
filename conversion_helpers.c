@@ -2,7 +2,7 @@
 
 /**
  * print_char - Prints a single character.
- * @args: va_list containing the character.
+ * @args: A list of arguments containing the character.
  *
  * Return: 1.
  */
@@ -10,15 +10,15 @@ int print_char(va_list args)
 {
 	int c = (char)va_arg(args, int);
 
-	write(1, &c, 1);
+	buffered_putchar(c);
 	return (1);
 }
 
 /**
  * print_str - Prints a string.
- * @args: va_list containing the string.
+ * @args: A list of arguments containing the string.
  *
- * Return: number of characters printed.
+ * Return: The number of characters printed.
  */
 int print_str(va_list args)
 {
@@ -29,7 +29,7 @@ int print_str(va_list args)
 		s = "(null)";
 	while (s[i])
 	{
-		write(1, &s[i], 1);
+		buffered_putchar(s[i]);
 		count++;
 		i++;
 	}

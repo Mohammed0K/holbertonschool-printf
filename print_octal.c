@@ -4,7 +4,7 @@
  * print_octal - Prints an unsigned integer in octal notation.
  * @n: The unsigned integer.
  *
- * Return: Number of characters printed.
+ * Return: The number of characters printed.
  */
 int print_octal(unsigned int n)
 {
@@ -14,6 +14,6 @@ int print_octal(unsigned int n)
 	if (n / 8)
 		count += print_octal(n / 8);
 	digit = (n % 8) + '0';
-	write(1, &digit, 1);
+	buffered_putchar(digit);
 	return (count + 1);
 }

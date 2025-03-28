@@ -5,7 +5,7 @@
  * @n: The unsigned integer.
  * @uppercase: 0 for lowercase, 1 for uppercase.
  *
- * Return: Number of characters printed.
+ * Return: The number of characters printed.
  */
 int print_hex(unsigned int n, int uppercase)
 {
@@ -23,6 +23,6 @@ int print_hex(unsigned int n, int uppercase)
 		else
 			digit = (n % 16) - 10 + 'a';
 	}
-	write(1, &digit, 1);
+	buffered_putchar(digit);
 	return (count + 1);
 }

@@ -4,7 +4,7 @@
  * print_number - Prints an integer.
  * @n: The integer to print.
  *
- * Return: Number of characters printed.
+ * Return: The number of characters printed.
  */
 int print_number(int n)
 {
@@ -13,12 +13,14 @@ int print_number(int n)
 
 	if (n < 0)
 	{
-		write(1, "-", 1);
+		buffered_putchar('-');
 		count++;
 		num = -n;
 	}
 	else
+	{
 		num = n;
+	}
 	count += print_unsigned_number(num);
 	return (count);
 }

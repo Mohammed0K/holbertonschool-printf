@@ -2,13 +2,13 @@
 
 /**
  * handle_default - Handles an unknown conversion specifier.
- * @specifier: conversion specifier.
+ * @specifier: The conversion specifier.
  *
  * Return: 2.
  */
 int handle_default(char specifier)
 {
-	write(1, "%", 1);
-	write(1, &specifier, 1);
+	buffered_putchar('%');
+	buffered_putchar(specifier);
 	return (2);
 }

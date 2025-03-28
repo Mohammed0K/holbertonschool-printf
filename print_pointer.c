@@ -4,14 +4,15 @@
  * print_pointer - Prints a pointer value.
  * @ptr: The pointer to print.
  *
- * Return: Number of characters printed.
+ * Return: The number of characters printed.
  */
 int print_pointer(void *ptr)
 {
 	int count = 0;
 	uintptr_t address;
 
-	count += write(1, "0x", 2);
+	count += buffered_putchar('0');
+	count += buffered_putchar('x');
 	address = (uintptr_t)ptr;
 	count += print_hex_pointer(address);
 	return (count);
