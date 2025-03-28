@@ -43,9 +43,6 @@ int handle_conversion(char specifier, va_list *args)
 		case 'b':
 			count = print_binary(va_arg(*args, unsigned int));
 			break;
-		case 'S':
-			count = print_custom_S(*args);
-			break;
 		default:
 			count = handle_default(specifier);
 			break;
