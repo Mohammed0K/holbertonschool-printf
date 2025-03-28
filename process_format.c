@@ -2,15 +2,13 @@
 /**
  * process_format - Processes the format string and prints the output.
  * @format: The format string.
- * @args: The va_list containing the arguments.
+ * @args: Pointer to the va_list containing the arguments.
  *
  * Return: Total number of characters printed, or -1 on error.
  */
-int process_format(const char *format, va_list args)
+int process_format(const char *format, va_list *args)
 {
-	int i = 0;
-	int count = 0;
-	int printed;
+	int i = 0, count = 0, printed;
 	char buffer[1024];
 	int buff_index = 0;
 
@@ -24,15 +22,13 @@ int process_format(const char *format, va_list args)
 				write(1, buffer, buff_index);
 				buff_index = 0;
 			}
-			i++;  /* Move to conversion specifier */
+			i++;
 			if (!format[i])
 				return (-1);
-			printed = handle_conversion(format[i], &args);
+			printed = handle_conversion(format[i], args);
 			if (printed < 0)
 				return (-1);
 			count += printed;
-			i++;  /* Advance past the specifier */
-			continue;
 		}
 		else
 		{
@@ -46,8 +42,8 @@ int process_format(const char *format, va_list args)
 		}
 		i++;
 	}
-	/* Flush any remaining characters */
 	if (buff_index > 0)
 		write(1, buffer, buff_index);
+
 	return (count);
 }

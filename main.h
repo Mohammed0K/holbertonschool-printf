@@ -13,7 +13,7 @@ int print_octal(unsigned int n);
 int print_hex(unsigned int n, int uppercase);
 int print_hex_pointer(uintptr_t n);
 int print_pointer(void *ptr);
-int process_format(const char *format, va_list args);
+int process_format(const char *format, va_list *args);
 int _printf(const char *format, ...);
 int handle_conversion(char specifier, va_list *args);
 
@@ -23,4 +23,4 @@ int print_str(va_list args);
 int handle_default(char specifier);
 int print_binary(unsigned int n);
 
-#endif /* MAIN_H */
+#endif

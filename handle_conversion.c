@@ -1,4 +1,5 @@
 #include "main.h"
+
 /**
  * handle_conversion - Handles conversion specifiers.
  * @specifier: The conversion specifier.
@@ -46,5 +47,6 @@ int handle_conversion(char specifier, va_list *args)
 			count = handle_default(specifier);
 			break;
 	}
+
 	return (count);
 }
