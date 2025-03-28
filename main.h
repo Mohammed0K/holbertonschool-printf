@@ -21,6 +21,7 @@ int print_hex(unsigned int n, int uppercase);
 int print_hex_pointer(uintptr_t n);
 int print_pointer(void *ptr);
 int print_binary(unsigned int n);
+int print_custom_S(va_list args);
 
 /* Buffered output functions */
 int buffered_putchar(char c);
