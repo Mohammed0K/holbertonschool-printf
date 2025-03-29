@@ -10,7 +10,7 @@
 int process_format(const char *format, va_list *args)
 {
 	int i = 0, count = 0, printed;
-	int flags;
+	int flags, length;
 
 	while (format[i])
 	{
@@ -31,9 +31,21 @@ int process_format(const char *format, va_list *args)
 					flags |= FLAG_HASH;
 				i++;
 			}
+			/* Parse length modifiers */
+			length = LENGTH_NONE;
+			if (format[i] == 'l')
+			{
+				length = LENGTH_L;
+				i++;
+			}
+			else if (format[i] == 'h')
+			{
+				length = LENGTH_H;
+				i++;
+			}
 			if (!format[i])
 				return (-1);
-			printed = handle_conversion(format[i], args, flags);
+			printed = handle_conversion(format[i], args, flags, length);
 			if (printed < 0)
 				return (-1);
 			count += printed;
