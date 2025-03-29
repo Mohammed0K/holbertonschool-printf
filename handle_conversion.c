@@ -20,10 +20,43 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 	int sign_len = 0;
 	char sign_char = '\0';
 
-	if (specifier == 'd' || specifier == 'i')
+	if (specifier == 's')
+	{
+		char *str = va_arg(*args, char *);
+		int str_len = 0;
+		if (!str)
+			str = "(null)";
+		while (str[str_len])
+			str_len++;
+		if (precision >= 0 && precision < str_len)
+			str_len = precision;
+		pad = (width > str_len) ? width - str_len : 0;
+		if (!(flags & FLAG_MINUS))
+		{
+			for (i = 0; i < pad; i++)
+			{
+				buffered_putchar(' ');
+				count++;
+			}
+		}
+		for (i = 0; i < str_len; i++)
+		{
+			buffered_putchar(str[i]);
+			count++;
+		}
+		if (flags & FLAG_MINUS)
+		{
+			for (i = 0; i < pad; i++)
+			{
+				buffered_putchar(' ');
+				count++;
+			}
+		}
+		return (count);
+	}
+	else if (specifier == 'd' || specifier == 'i')
 	{
 		long num;
-
 		if (length == LENGTH_L)
 			num = va_arg(*args, long int);
 		else
@@ -101,7 +134,6 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 	else if (specifier == 'u')
 	{
 		unsigned long unum;
-
 		if (length == LENGTH_L)
 			unum = va_arg(*args, unsigned long int);
 		else if (length == LENGTH_H)
@@ -161,7 +193,6 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 	{
 		unsigned long unum;
 		int prefix = 0;
-
 		if (length == LENGTH_L)
 			unum = va_arg(*args, unsigned long int);
 		else if (length == LENGTH_H)
@@ -229,7 +260,6 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 		unsigned long unum;
 		int prefix = 0;
 		char xbase = (specifier == 'x') ? 'a' : 'A';
-
 		if (length == LENGTH_L)
 			unum = va_arg(*args, unsigned long int);
 		else if (length == LENGTH_H)
