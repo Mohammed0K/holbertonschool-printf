@@ -1,8 +1,8 @@
 #include "main.h"
 
 /**
- * handle_conversion - Handles conversion specifiers with flag, length, and
- *                     field width support.
+ * handle_conversion - Handles conversion specifiers with flag, length,
+ *                     and field width support.
  * @specifier: The conversion specifier.
  * @args: A pointer to the list of arguments.
  * @flags: Bitwise OR of flags (+, space, #).
@@ -14,8 +14,9 @@
 int handle_conversion(char specifier, va_list *args, int flags,
 		      int length, int width)
 {
-	int count = 0;
-	int dummy, pad, i;
+	int count = 0, pad, i;
+	int real_count = 0, len;
+	va_list args_copy;
 
 	switch (specifier)
 	{
@@ -32,12 +33,12 @@ int handle_conversion(char specifier, va_list *args, int flags,
 		case 's':
 		{
 			char *s = va_arg(*args, char *);
-			int len = 0;
+			int str_len = 0;
 			if (s == NULL)
 				s = "(null)";
-			while (s[len])
-				len++;
-			pad = (width > len) ? width - len : 0;
+			while (s[str_len])
+				str_len++;
+			pad = (width > str_len) ? width - str_len : 0;
 			for (i = 0; i < pad; i++)
 				count += buffered_putchar(' ');
 			while (*s)
@@ -55,10 +56,6 @@ int handle_conversion(char specifier, va_list *args, int flags,
 		case 'd':
 		case 'i':
 		{
-			int real_count = 0;
-			int len;
-			va_list args_copy;
-
 			if (width > 0)
 			{
 				va_copy(args_copy, *args);
@@ -88,24 +85,19 @@ int handle_conversion(char specifier, va_list *args, int flags,
 		}
 		case 'u':
 		{
-			int real_count = 0;
-			int len;
-			va_list args_copy;
-
 			if (width > 0)
 			{
 				va_copy(args_copy, *args);
 				g_count_mode = 1;
 				g_dummy_count = 0;
 				if (length == LENGTH_L)
-					print_unsigned_long_number(va_arg(args_copy,
-						unsigned long int));
+					print_unsigned_long_number(
+						va_arg(args_copy, unsigned long int));
 				else if (length == LENGTH_H)
 					print_unsigned_number((unsigned short int)
 						va_arg(args_copy, int));
 				else
-					print_unsigned_number(va_arg(args_copy,
-						unsigned int));
+					print_unsigned_number(va_arg(args_copy, unsigned int));
 				len = g_dummy_count;
 				g_count_mode = 0;
 				va_end(args_copy);
@@ -127,10 +119,6 @@ int handle_conversion(char specifier, va_list *args, int flags,
 		}
 		case 'o':
 		{
-			int real_count = 0;
-			int len;
-			va_list args_copy;
-
 			if (width > 0)
 			{
 				va_copy(args_copy, *args);
@@ -138,21 +126,21 @@ int handle_conversion(char specifier, va_list *args, int flags,
 				g_dummy_count = 0;
 				if (length == LENGTH_L)
 				{
-					if ((flags & FLAG_HASH))
+					if (flags & FLAG_HASH)
 						buffered_putchar('0');
 					print_octal_long(va_arg(args_copy,
 						unsigned long int));
 				}
 				else if (length == LENGTH_H)
 				{
-					if ((flags & FLAG_HASH))
+					if (flags & FLAG_HASH)
 						buffered_putchar('0');
 					print_octal((unsigned short int)
 						va_arg(args_copy, int));
 				}
 				else
 				{
-					if ((flags & FLAG_HASH))
+					if (flags & FLAG_HASH)
 						buffered_putchar('0');
 					print_octal(va_arg(args_copy, unsigned int));
 				}
@@ -165,21 +153,21 @@ int handle_conversion(char specifier, va_list *args, int flags,
 			}
 			if (length == LENGTH_L)
 			{
-				if ((flags & FLAG_HASH))
+				if (flags & FLAG_HASH)
 					real_count += buffered_putchar('0');
 				real_count += print_octal_long(va_arg(*args,
 					unsigned long int));
 			}
 			else if (length == LENGTH_H)
 			{
-				if ((flags & FLAG_HASH))
+				if (flags & FLAG_HASH)
 					real_count += buffered_putchar('0');
 				real_count += print_octal((unsigned short int)
 					va_arg(*args, int));
 			}
 			else
 			{
-				if ((flags & FLAG_HASH))
+				if (flags & FLAG_HASH)
 					real_count += buffered_putchar('0');
 				real_count += print_octal(va_arg(*args, unsigned int));
 			}
@@ -189,10 +177,6 @@ int handle_conversion(char specifier, va_list *args, int flags,
 		case 'x':
 		case 'X':
 		{
-			int real_count = 0;
-			int len;
-			va_list args_copy;
-
 			if (width > 0)
 			{
 				va_copy(args_copy, *args);
@@ -200,7 +184,7 @@ int handle_conversion(char specifier, va_list *args, int flags,
 				g_dummy_count = 0;
 				if (length == LENGTH_L)
 				{
-					if ((flags & FLAG_HASH))
+					if (flags & FLAG_HASH)
 					{
 						buffered_putchar('0');
 						buffered_putchar(specifier == 'x' ? 'x' : 'X');
@@ -210,7 +194,7 @@ int handle_conversion(char specifier, va_list *args, int flags,
 				}
 				else if (length == LENGTH_H)
 				{
-					if ((flags & FLAG_HASH))
+					if (flags & FLAG_HASH)
 					{
 						buffered_putchar('0');
 						buffered_putchar(specifier == 'x' ? 'x' : 'X');
@@ -221,7 +205,7 @@ int handle_conversion(char specifier, va_list *args, int flags,
 				}
 				else
 				{
-					if ((flags & FLAG_HASH))
+					if (flags & FLAG_HASH)
 					{
 						buffered_putchar('0');
 						buffered_putchar(specifier == 'x' ? 'x' : 'X');
@@ -238,7 +222,7 @@ int handle_conversion(char specifier, va_list *args, int flags,
 			}
 			if (length == LENGTH_L)
 			{
-				if ((flags & FLAG_HASH))
+				if (flags & FLAG_HASH)
 				{
 					real_count += buffered_putchar('0');
 					real_count += buffered_putchar(specifier == 'x' ?
@@ -249,7 +233,7 @@ int handle_conversion(char specifier, va_list *args, int flags,
 			}
 			else if (length == LENGTH_H)
 			{
-				if ((flags & FLAG_HASH))
+				if (flags & FLAG_HASH)
 				{
 					real_count += buffered_putchar('0');
 					real_count += buffered_putchar(specifier == 'x' ?
@@ -260,7 +244,7 @@ int handle_conversion(char specifier, va_list *args, int flags,
 			}
 			else
 			{
-				if ((flags & FLAG_HASH))
+				if (flags & FLAG_HASH)
 				{
 					real_count += buffered_putchar('0');
 					real_count += buffered_putchar(specifier == 'x' ?
@@ -279,10 +263,6 @@ int handle_conversion(char specifier, va_list *args, int flags,
 		}
 		case 'b':
 		{
-			int real_count = 0;
-			int len;
-			va_list args_copy;
-
 			if (width > 0)
 			{
 				va_copy(args_copy, *args);

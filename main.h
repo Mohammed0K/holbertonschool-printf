@@ -20,7 +20,7 @@
 
 int _printf(const char *format, ...);
 int process_format(const char *format, va_list *args);
-int handle_conversion(char specifier, va_list *args, int flags, int length);
+int handle_conversion(char specifier, va_list *args, int flags, int length, int width);
 int print_char(va_list args);
 int print_str(va_list args);
 int handle_default(char specifier);
@@ -42,5 +42,9 @@ int print_hex_long(unsigned long int n, int uppercase);
 /* Buffered output functions */
 int buffered_putchar(char c);
 void flush_buffer(void);
+
+/* Global variables for counting mode */
+extern int g_count_mode;
+extern int g_dummy_count;
 
 #endif

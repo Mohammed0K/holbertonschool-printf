@@ -20,7 +20,6 @@ int process_format(const char *format, va_list *args)
 			if (!format[i])
 				return (-1);
 			flags = 0;
-			/* Parse flag characters */
 			while (format[i] == '+' || format[i] == ' ' || format[i] == '#')
 			{
 				if (format[i] == '+')
@@ -31,7 +30,6 @@ int process_format(const char *format, va_list *args)
 					flags |= FLAG_HASH;
 				i++;
 			}
-			/* Parse field width */
 			if (format[i] == '*')
 			{
 				width = va_arg(*args, int);
@@ -46,7 +44,6 @@ int process_format(const char *format, va_list *args)
 					i++;
 				}
 			}
-			/* Parse length modifiers */
 			length = LENGTH_NONE;
 			if (format[i] == 'l')
 			{
