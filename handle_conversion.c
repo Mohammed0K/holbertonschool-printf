@@ -40,7 +40,6 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
     }
     else if (specifier == 'c')
     {
-        /* معالجة حرف مع دعم العرض: نطبع الحرف حتى وإن كان '\0' */
         char ch = (char)va_arg(*args, int);
         pad = (width > 1) ? width - 1 : 0;
         if (!(flags & FLAG_MINUS))
@@ -68,11 +67,20 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
         {
             sign_char = '-';
             sign_len = 1;
-            /* تحويل العدد السالب إلى قيمة موجبة باستخدام unsigned long */
             n = (unsigned long)(-(num + 1)) + 1;
         }
         else
         {
+            if (flags & FLAG_PLUS)
+            {
+                sign_char = '+';
+                sign_len = 1;
+            }
+            else if (flags & FLAG_SPACE)
+            {
+                sign_char = ' ';
+                sign_len = 1;
+            }
             n = (unsigned long)num;
         }
         i = 0;
@@ -263,7 +271,7 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
                 num_str[j] = temp[num_len - j - 1];
             num_str[num_len] = '\0';
         }
-        total = 2 + num_len; /* "0x" + الرقم */
+        total = 2 + num_len;
         pad = (width > total) ? width - total : 0;
         if (!(flags & FLAG_MINUS))
             for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
