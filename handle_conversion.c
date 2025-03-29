@@ -38,6 +38,13 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
 		return count;
 	}
+	else if (specifier == 'c')
+	{
+		/* معالجة حرف */
+		char ch = (char)va_arg(*args, int);
+		buffered_putchar(ch);
+		return 1;
+	}
 	else if (specifier == 'd' || specifier == 'i')
 	{
 		long num;
