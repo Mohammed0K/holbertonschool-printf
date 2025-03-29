@@ -15,17 +15,15 @@
 int handle_conversion(char specifier, va_list *args, int flags, int length,
 		      int width, int precision)
 {
-	int count = 0, i;
+	int count = 0, i, pad = 0;
+	char temp[50];
+	int len = 0, num_is_zero = 0;
+	long num = 0;
+	int negative = 0;
+	int sign = 0;
 
 	if (specifier == 'd' || specifier == 'i')
 	{
-		long num;
-		int negative = 0;
-		char num_buf[50];
-		int pos = 0, num_digits, zeros = 0, pad_zeros = 0, spaces = 0;
-		int sign_len = 0;
-		char sign_char = '\0';
-
 		if (length == LENGTH_L)
 			num = va_arg(*args, long int);
 		else
@@ -36,89 +34,155 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 			num = -num;
 		}
 		if (num == 0)
-			num_buf[pos++] = '0';
+		{
+			temp[len++] = '0';
+			num_is_zero = 1;
+		}
 		else
 		{
 			while (num)
 			{
-				num_buf[pos++] = (num % 10) + '0';
+				temp[len++] = (num % 10) + '0';
 				num /= 10;
 			}
 		}
-		if (precision == 0 && pos == 1 && num_buf[0] == '0')
-			pos = 0;
-		num_digits = pos;
+		if (precision == 0 && num_is_zero)
+			len = 0;
 		if (negative)
-		{
-			sign_len = 1;
-			sign_char = '-';
-		}
+			sign = 1;
 		else if (flags & FLAG_PLUS)
-		{
-			sign_len = 1;
-			sign_char = '+';
-		}
+			sign = 1;
 		else if (flags & FLAG_SPACE)
+			sign = 1;
 		{
-			sign_len = 1;
-			sign_char = ' ';
-		}
-		if (precision > num_digits)
-			zeros = precision - num_digits;
-		else
-			zeros = 0;
-		if (precision < 0 && (flags & FLAG_ZERO) && !(flags & FLAG_MINUS) &&
-		    width > (sign_len + num_digits))
-			pad_zeros = width - (sign_len + num_digits);
-		else
-			pad_zeros = 0;
-		{
-			int temp = (num_digits > zeros) ? num_digits : zeros;
-			int total_num_len = sign_len + temp;
+			int prec_zeros = (precision > len) ? precision - len : 0;
+			int num_total = sign + ((len > precision) ? len : precision);
 
-			if (pad_zeros > total_num_len)
-				total_num_len = pad_zeros + sign_len + num_digits;
-			if (width > total_num_len)
-				spaces = width - total_num_len;
-			else
-				spaces = 0;
-		}
-		if (!(flags & FLAG_MINUS))
-		{
-			for (i = 0; i < spaces; i++)
+			pad = (width > num_total) ? width - num_total : 0;
+			if (!(flags & FLAG_MINUS))
+			{
+				if ((flags & FLAG_ZERO) && (precision < 0))
+				{
+					for (i = 0; i < pad; i++)
+					{
+						buffered_putchar('0');
+						count++;
+					}
+				}
+				else
+				{
+					for (i = 0; i < pad; i++)
+					{
+						buffered_putchar(' ');
+						count++;
+					}
+				}
+			}
+			if (negative)
+			{
+				buffered_putchar('-');
+				count++;
+			}
+			else if (flags & FLAG_PLUS)
+			{
+				buffered_putchar('+');
+				count++;
+			}
+			else if (flags & FLAG_SPACE)
 			{
 				buffered_putchar(' ');
 				count++;
 			}
-		}
-		if (sign_len)
-		{
-			buffered_putchar(sign_char);
-			count++;
-		}
-		{
-			int zeros_to_print = (pad_zeros > 0) ? pad_zeros : zeros;
-
-			for (i = 0; i < zeros_to_print; i++)
+			for (i = 0; i < prec_zeros; i++)
 			{
 				buffered_putchar('0');
 				count++;
 			}
-		}
-		for (i = num_digits - 1; i >= 0; i--)
-		{
-			buffered_putchar(num_buf[i]);
-			count++;
-		}
-		if (flags & FLAG_MINUS)
-		{
-			for (i = 0; i < spaces; i++)
+			for (i = len - 1; i >= 0; i--)
 			{
-				buffered_putchar(' ');
+				buffered_putchar(temp[i]);
 				count++;
 			}
+			if (flags & FLAG_MINUS)
+			{
+				for (i = 0; i < pad; i++)
+				{
+					buffered_putchar(' ');
+					count++;
+				}
+			}
+			return (count);
 		}
-		return (count);
+	}
+	else if (specifier == 'u')
+	{
+		unsigned long unum = 0;
+
+		if (length == LENGTH_L)
+			unum = va_arg(*args, unsigned long int);
+		else if (length == LENGTH_H)
+			unum = (unsigned short int)va_arg(*args, int);
+		else
+			unum = va_arg(*args, unsigned int);
+		if (unum == 0)
+		{
+			temp[len++] = '0';
+			num_is_zero = 1;
+		}
+		else
+		{
+			while (unum)
+			{
+				temp[len++] = (unum % 10) + '0';
+				unum /= 10;
+			}
+		}
+		if (precision == 0 && num_is_zero)
+			len = 0;
+		{
+			int prec_zeros = (precision > len) ? precision - len : 0;
+			int num_total = (len > precision) ? len : precision;
+
+			pad = (width > num_total) ? width - num_total : 0;
+			if (!(flags & FLAG_MINUS))
+			{
+				if ((flags & FLAG_ZERO) && (precision < 0))
+				{
+					for (i = 0; i < pad; i++)
+					{
+						buffered_putchar('0');
+						count++;
+					}
+				}
+				else
+				{
+					for (i = 0; i < pad; i++)
+					{
+						buffered_putchar(' ');
+						count++;
+					}
+				}
+			}
+			for (i = 0; i < prec_zeros; i++)
+			{
+				buffered_putchar('0');
+				count++;
+			}
+			for (i = len - 1; i >= 0; i--)
+			{
+				buffered_putchar(temp[i]);
+				count++;
+			}
+			if (flags & FLAG_MINUS)
+			{
+				for (i = 0; i < pad; i++)
+				{
+					buffered_putchar(' ');
+					count++;
+				}
+			}
+			return (count);
+		}
 	}
 	return (handle_default(specifier));
 }
