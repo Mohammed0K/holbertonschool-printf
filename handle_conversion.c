@@ -40,16 +40,13 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
     }
     else if (specifier == 'c')
     {
-        /* معالجة حرف مع دعم العرض */
+        /* معالجة حرف مع دعم العرض: نطبع الحرف حتى وإن كان '\0' */
         char ch = (char)va_arg(*args, int);
         pad = (width > 1) ? width - 1 : 0;
         if (!(flags & FLAG_MINUS))
             for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
-        /* إذا كان الحرف هو '\0'، يتم احتسابه في الطول دون طباعته */
-        if (ch)
-            buffered_putchar(ch), count++;
-        else
-            count++; /* يُحتسب كحرف حتى وإن لم يظهر */
+        buffered_putchar(ch);
+        count++;
         if (flags & FLAG_MINUS)
             for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
         return count;
@@ -62,6 +59,7 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
     else if (specifier == 'd' || specifier == 'i')
     {
         long num;
+        unsigned long n;
         if (length == LENGTH_L)
             num = va_arg(*args, long int);
         else
@@ -70,26 +68,21 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
         {
             sign_char = '-';
             sign_len = 1;
-            num = -num;
+            /* تحويل العدد السالب إلى قيمة موجبة باستخدام unsigned long */
+            n = (unsigned long)(-(num + 1)) + 1;
         }
-        else if (flags & FLAG_PLUS)
+        else
         {
-            sign_char = '+';
-            sign_len = 1;
-        }
-        else if (flags & FLAG_SPACE)
-        {
-            sign_char = ' ';
-            sign_len = 1;
+            n = (unsigned long)num;
         }
         i = 0;
-        if (num == 0)
+        if (n == 0)
             num_str[i++] = '0';
         else
-            while (num)
+            while (n)
             {
-                num_str[i++] = (num % 10) + '0';
-                num /= 10;
+                num_str[i++] = (n % 10) + '0';
+                n /= 10;
             }
         num_len = i;
         if (precision == 0 && num_len == 1 && num_str[0] == '0')
@@ -242,7 +235,6 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
         void *ptr = va_arg(*args, void *);
         int j;
         char temp[50];
-
         if (!ptr)
         {
             buffered_putchar('(');
@@ -252,7 +244,6 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
             buffered_putchar(')');
             return 5;
         }
-        /* تحويل العنوان إلى سلسلة سداسية عشرية */
         {
             unsigned long addr = (unsigned long)ptr;
             i = 0;
@@ -268,7 +259,6 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
                 }
             }
             num_len = i;
-            /* عكس السلسلة */
             for (j = 0; j < num_len; j++)
                 num_str[j] = temp[num_len - j - 1];
             num_str[num_len] = '\0';
