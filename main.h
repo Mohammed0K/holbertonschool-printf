@@ -9,9 +9,11 @@
 #define BUF_SIZE 1024
 
 /* Flag definitions */
-#define FLAG_PLUS  (1 << 0)
-#define FLAG_SPACE (1 << 1)
-#define FLAG_HASH  (1 << 2)
+#define FLAG_PLUS   (1 << 0)
+#define FLAG_SPACE  (1 << 1)
+#define FLAG_HASH   (1 << 2)
+#define FLAG_ZERO   (1 << 3)
+#define FLAG_MINUS  (1 << 4)
 
 /* Length modifier definitions */
 #define LENGTH_NONE 0
@@ -20,7 +22,9 @@
 
 int _printf(const char *format, ...);
 int process_format(const char *format, va_list *args);
-int handle_conversion(char specifier, va_list *args, int flags, int length, int width);
+/* Updated to include field width and precision */
+int handle_conversion(char specifier, va_list *args, int flags,
+		      int length, int width, int precision);
 int print_char(va_list args);
 int print_str(va_list args);
 int handle_default(char specifier);
@@ -39,6 +43,10 @@ int print_unsigned_long_number(unsigned long int n);
 int print_octal_long(unsigned long int n);
 int print_hex_long(unsigned long int n, int uppercase);
 
+/* New custom conversion specifiers */
+int print_reversed(va_list args);
+int print_rot13(va_list args);
+
 /* Buffered output functions */
 int buffered_putchar(char c);
 void flush_buffer(void);
@@ -47,4 +55,4 @@ void flush_buffer(void);
 extern int g_count_mode;
 extern int g_dummy_count;
 
-#endif
+#endif 

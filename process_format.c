@@ -10,7 +10,7 @@
 int process_format(const char *format, va_list *args)
 {
 	int i = 0, count = 0, printed;
-	int flags, width, length;
+	int flags, width, length, precision;
 
 	while (format[i])
 	{
@@ -20,7 +20,9 @@ int process_format(const char *format, va_list *args)
 			if (!format[i])
 				return (-1);
 			flags = 0;
-			while (format[i] == '+' || format[i] == ' ' || format[i] == '#')
+			while (format[i] == '+' || format[i] == ' ' ||
+			       format[i] == '#' || format[i] == '0' ||
+			       format[i] == '-')
 			{
 				if (format[i] == '+')
 					flags |= FLAG_PLUS;
@@ -28,6 +30,10 @@ int process_format(const char *format, va_list *args)
 					flags |= FLAG_SPACE;
 				else if (format[i] == '#')
 					flags |= FLAG_HASH;
+				else if (format[i] == '0')
+					flags |= FLAG_ZERO;
+				else if (format[i] == '-')
+					flags |= FLAG_MINUS;
 				i++;
 			}
 			if (format[i] == '*')
@@ -44,6 +50,25 @@ int process_format(const char *format, va_list *args)
 					i++;
 				}
 			}
+			precision = -1;
+			if (format[i] == '.')
+			{
+				i++;
+				if (format[i] == '*')
+				{
+					precision = va_arg(*args, int);
+					i++;
+				}
+				else
+				{
+					precision = 0;
+					while (format[i] >= '0' && format[i] <= '9')
+					{
+						precision = precision * 10 + (format[i] - '0');
+						i++;
+					}
+				}
+			}
 			length = LENGTH_NONE;
 			if (format[i] == 'l')
 			{
@@ -57,7 +82,8 @@ int process_format(const char *format, va_list *args)
 			}
 			if (!format[i])
 				return (-1);
-			printed = handle_conversion(format[i], args, flags, length, width);
+			printed = handle_conversion(format[i], args, flags,
+						    length, width, precision);
 			if (printed < 0)
 				return (-1);
 			count += printed;
