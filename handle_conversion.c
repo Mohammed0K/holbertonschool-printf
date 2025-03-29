@@ -20,10 +20,27 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 	int sign_len = 0;
 	char sign_char = '\0';
 
-	if (specifier == 'd' || specifier == 'i')
+	if (specifier == 's')
+	{
+		char *str = va_arg(*args, char *);
+		int str_len = 0;
+		if (!str)
+			str = "(null)";
+		while (str[str_len])
+			str_len++;
+		if (precision >= 0 && precision < str_len)
+			str_len = precision;
+		pad = (width > str_len) ? width - str_len : 0;
+		if (!(flags & FLAG_MINUS))
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
+		for (i = 0; i < str_len; i++) { buffered_putchar(str[i]); count++; }
+		if (flags & FLAG_MINUS)
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
+		return count;
+	}
+	else if (specifier == 'd' || specifier == 'i')
 	{
 		long num;
-
 		if (length == LENGTH_L)
 			num = va_arg(*args, long int);
 		else
@@ -48,13 +65,11 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 		if (num == 0)
 			num_str[i++] = '0';
 		else
-		{
 			while (num)
 			{
 				num_str[i++] = (num % 10) + '0';
 				num /= 10;
 			}
-		}
 		num_len = i;
 		if (precision == 0 && num_len == 1 && num_str[0] == '0')
 			num_len = 0;
@@ -66,42 +81,17 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 		total = sign_len + zeros + num_len;
 		pad = (width > total) ? width - total : 0;
 		if (!(flags & FLAG_MINUS))
-		{
-			for (i = 0; i < pad; i++)
-			{
-				buffered_putchar(' ');
-				count++;
-			}
-		}
-		if (sign_len)
-		{
-			buffered_putchar(sign_char);
-			count++;
-		}
-		for (i = 0; i < zeros; i++)
-		{
-			buffered_putchar('0');
-			count++;
-		}
-		for (i = num_len - 1; i >= 0; i--)
-		{
-			buffered_putchar(num_str[i]);
-			count++;
-		}
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
+		if (sign_len) { buffered_putchar(sign_char); count++; }
+		for (i = 0; i < zeros; i++) { buffered_putchar('0'); count++; }
+		for (i = num_len - 1; i >= 0; i--) { buffered_putchar(num_str[i]); count++; }
 		if (flags & FLAG_MINUS)
-		{
-			for (i = 0; i < pad; i++)
-			{
-				buffered_putchar(' ');
-				count++;
-			}
-		}
-		return (count);
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
+		return count;
 	}
 	else if (specifier == 'u')
 	{
 		unsigned long unum;
-
 		if (length == LENGTH_L)
 			unum = va_arg(*args, unsigned long int);
 		else if (length == LENGTH_H)
@@ -112,13 +102,11 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 		if (unum == 0)
 			num_str[i++] = '0';
 		else
-		{
 			while (unum)
 			{
 				num_str[i++] = (unum % 10) + '0';
 				unum /= 10;
 			}
-		}
 		num_len = i;
 		if (precision == 0 && num_len == 1 && num_str[0] == '0')
 			num_len = 0;
@@ -130,38 +118,17 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 		total = zeros + num_len;
 		pad = (width > total) ? width - total : 0;
 		if (!(flags & FLAG_MINUS))
-		{
-			for (i = 0; i < pad; i++)
-			{
-				buffered_putchar(' ');
-				count++;
-			}
-		}
-		for (i = 0; i < zeros; i++)
-		{
-			buffered_putchar('0');
-			count++;
-		}
-		for (i = num_len - 1; i >= 0; i--)
-		{
-			buffered_putchar(num_str[i]);
-			count++;
-		}
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
+		for (i = 0; i < zeros; i++) { buffered_putchar('0'); count++; }
+		for (i = num_len - 1; i >= 0; i--) { buffered_putchar(num_str[i]); count++; }
 		if (flags & FLAG_MINUS)
-		{
-			for (i = 0; i < pad; i++)
-			{
-				buffered_putchar(' ');
-				count++;
-			}
-		}
-		return (count);
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
+		return count;
 	}
 	else if (specifier == 'o')
 	{
 		unsigned long unum;
 		int prefix = 0;
-
 		if (length == LENGTH_L)
 			unum = va_arg(*args, unsigned long int);
 		else if (length == LENGTH_H)
@@ -172,13 +139,11 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 		if (unum == 0)
 			num_str[i++] = '0';
 		else
-		{
 			while (unum)
 			{
 				num_str[i++] = (unum % 8) + '0';
 				unum /= 8;
 			}
-		}
 		num_len = i;
 		if (precision == 0 && num_len == 1 && num_str[0] == '0')
 			num_len = 0;
@@ -192,44 +157,19 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 		total = prefix + zeros + num_len;
 		pad = (width > total) ? width - total : 0;
 		if (!(flags & FLAG_MINUS))
-		{
-			for (i = 0; i < pad; i++)
-			{
-				buffered_putchar(' ');
-				count++;
-			}
-		}
-		if (prefix)
-		{
-			buffered_putchar('0');
-			count++;
-		}
-		for (i = 0; i < zeros; i++)
-		{
-			buffered_putchar('0');
-			count++;
-		}
-		for (i = num_len - 1; i >= 0; i--)
-		{
-			buffered_putchar(num_str[i]);
-			count++;
-		}
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
+		if (prefix) { buffered_putchar('0'); count++; }
+		for (i = 0; i < zeros; i++) { buffered_putchar('0'); count++; }
+		for (i = num_len - 1; i >= 0; i--) { buffered_putchar(num_str[i]); count++; }
 		if (flags & FLAG_MINUS)
-		{
-			for (i = 0; i < pad; i++)
-			{
-				buffered_putchar(' ');
-				count++;
-			}
-		}
-		return (count);
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
+		return count;
 	}
 	else if (specifier == 'x' || specifier == 'X')
 	{
 		unsigned long unum;
 		int prefix = 0;
 		char xbase = (specifier == 'x') ? 'a' : 'A';
-
 		if (length == LENGTH_L)
 			unum = va_arg(*args, unsigned long int);
 		else if (length == LENGTH_H)
@@ -240,7 +180,6 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 		if (unum == 0)
 			num_str[i++] = '0';
 		else
-		{
 			while (unum)
 			{
 				int digit = unum % 16;
@@ -250,7 +189,6 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 					num_str[i++] = digit - 10 + xbase;
 				unum /= 16;
 			}
-		}
 		num_len = i;
 		if (precision == 0 && num_len == 1 && num_str[0] == '0')
 			num_len = 0;
@@ -265,38 +203,117 @@ int handle_conversion(char specifier, va_list *args, int flags, int length,
 		total = prefix + zeros + num_len;
 		pad = (width > total) ? width - total : 0;
 		if (!(flags & FLAG_MINUS))
-		{
-			for (i = 0; i < pad; i++)
-			{
-				buffered_putchar(' ');
-				count++;
-			}
-		}
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
 		if (prefix == 2)
 		{
 			buffered_putchar('0');
 			buffered_putchar((specifier == 'x') ? 'x' : 'X');
 			count += 2;
 		}
-		for (i = 0; i < zeros; i++)
-		{
-			buffered_putchar('0');
-			count++;
-		}
-		for (i = num_len - 1; i >= 0; i--)
-		{
-			buffered_putchar(num_str[i]);
-			count++;
-		}
+		for (i = 0; i < zeros; i++) { buffered_putchar('0'); count++; }
+		for (i = num_len - 1; i >= 0; i--) { buffered_putchar(num_str[i]); count++; }
 		if (flags & FLAG_MINUS)
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
+		return count;
+	}
+	else if (specifier == 'p')
+	{
+		void *ptr = va_arg(*args, void *);
+		if (!ptr)
 		{
-			for (i = 0; i < pad; i++)
+			buffered_putchar('(');
+			buffered_putchar('n');
+			buffered_putchar('i');
+			buffered_putchar('l');
+			buffered_putchar(')');
+			return 5;
+		}
+		buffered_putchar('0');
+		buffered_putchar('x');
+		return 2 + handle_conversion('x', args, 0, LENGTH_L, 0, -1);
+	}
+	else if (specifier == 'b')
+	{
+		unsigned int num = va_arg(*args, unsigned int);
+		i = 0;
+		if (num == 0)
+			num_str[i++] = '0';
+		else
+			while (num)
 			{
-				buffered_putchar(' ');
+				num_str[i++] = (num % 2) + '0';
+				num /= 2;
+			}
+		num_len = i;
+		pad = (width > num_len) ? width - num_len : 0;
+		if (!(flags & FLAG_MINUS))
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
+		for (i = num_len - 1; i >= 0; i--) { buffered_putchar(num_str[i]); count++; }
+		if (flags & FLAG_MINUS)
+			for (i = 0; i < pad; i++) { buffered_putchar(' '); count++; }
+		return count;
+	}
+	else if (specifier == 'S')
+	{
+		char *str = va_arg(*args, char *);
+		int j = 0;
+		if (!str)
+			str = "(null)";
+		while (str[j])
+		{
+			if ((str[j] > 0 && str[j] < 32) || str[j] >= 127)
+			{
+				buffered_putchar('\\');
+				buffered_putchar('x');
+				{
+					int high = str[j] / 16;
+					int low = str[j] % 16;
+					buffered_putchar((high < 10) ? high + '0' : high - 10 + 'A');
+					buffered_putchar((low < 10) ? low + '0' : low - 10 + 'A');
+					count += 4;
+				}
+			}
+			else
+			{
+				buffered_putchar(str[j]);
 				count++;
 			}
+			j++;
 		}
-		return (count);
+		return count;
 	}
-	return (handle_default(specifier));
+	else if (specifier == 'r')
+	{
+		char *str = va_arg(*args, char *);
+		int j, cnt = 0;
+		if (!str)
+			str = "(null)";
+		for (j = 0; str[j]; j++);
+		for (j = j - 1; j >= 0; j--)
+		{
+			buffered_putchar(str[j]);
+			cnt++;
+		}
+		return cnt;
+	}
+	else if (specifier == 'R')
+	{
+		char *str = va_arg(*args, char *);
+		int j, cnt = 0;
+		char c;
+		if (!str)
+			str = "(null)";
+		for (j = 0; str[j]; j++)
+		{
+			c = str[j];
+			if (c >= 'A' && c <= 'Z')
+				c = ((c - 'A' + 13) % 26) + 'A';
+			else if (c >= 'a' && c <= 'z')
+				c = ((c - 'a' + 13) % 26) + 'a';
+			buffered_putchar(c);
+			cnt++;
+		}
+		return cnt;
+	}
+	return handle_default(specifier);
 }
