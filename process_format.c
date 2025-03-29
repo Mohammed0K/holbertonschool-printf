@@ -32,11 +32,19 @@ int process_format(const char *format, va_list *args)
 				i++;
 			}
 			/* Parse field width */
-			width = 0;
-			while (format[i] >= '0' && format[i] <= '9')
+			if (format[i] == '*')
 			{
-				width = width * 10 + (format[i] - '0');
+				width = va_arg(*args, int);
 				i++;
+			}
+			else
+			{
+				width = 0;
+				while (format[i] >= '0' && format[i] <= '9')
+				{
+					width = width * 10 + (format[i] - '0');
+					i++;
+				}
 			}
 			/* Parse length modifiers */
 			length = LENGTH_NONE;
