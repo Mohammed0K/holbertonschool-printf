@@ -1,28 +1,42 @@
 #include "main.h"
-
 /**
- * print_hex - Prints an unsigned integer in hexadecimal notation.
- * @n: The unsigned integer.
- * @uppercase: 0 for lowercase, 1 for uppercase.
+ * print_hex - Prints an unsigned number in hexadecimal (lowercase).
+ * @types: List of arguments.
+ * @buffer: Buffer array to handle print.
+ * @flags: Active flags for formatting.
+ * @width: Field width.
+ * @precision: Precision specification.
+ * @size: Size specifier.
  *
- * Return: The number of characters printed.
+ * Return: Number of characters printed.
  */
-int print_hex(unsigned int n, int uppercase)
+int print_hex(va_list types, char buffer[],
+		int flags, int width, int precision, int size)
 {
-	int count = 0;
-	char digit;
+	unsigned int n = va_arg(types, unsigned int);
+	int i = 0, count = 0;
+	char temp[50];
+	char *map = "0123456789abcdef";
 
-	if (n / 16)
-		count += print_hex(n / 16, uppercase);
-	if (n % 16 < 10)
-		digit = (n % 16) + '0';
-	else
+	(void)width;
+	(void)precision;
+	n = convert_size_unsgnd(n, size);
+	if (n == 0)
 	{
-		if (uppercase)
-			digit = (n % 16) - 10 + 'A';
-		else
-			digit = (n % 16) - 10 + 'a';
+		buffer[count++] = '0';
+		return (write(1, buffer, count));
 	}
-	buffered_putchar(digit);
-	return (count + 1);
+	while (n > 0)
+	{
+		temp[i++] = map[n % 16];
+		n /= 16;
+	}
+	if (flags & FLAG_HASH && buffer[0] != '0')
+	{
+		buffer[count++] = 'x';
+		buffer[count++] = '0';
+	}
+	while (i--)
+		buffer[count++] = temp[i];
+	return (write(1, buffer, count));
 }
