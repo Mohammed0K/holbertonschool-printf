@@ -8,9 +8,14 @@
 
 #define BUF_SIZE 1024
 
+/* Flag definitions */
+#define FLAG_PLUS  (1 << 0)
+#define FLAG_SPACE (1 << 1)
+#define FLAG_HASH  (1 << 2)
+
 int _printf(const char *format, ...);
 int process_format(const char *format, va_list *args);
-int handle_conversion(char specifier, va_list *args);
+int handle_conversion(char specifier, va_list *args, int flags);
 int print_char(va_list args);
 int print_str(va_list args);
 int handle_default(char specifier);

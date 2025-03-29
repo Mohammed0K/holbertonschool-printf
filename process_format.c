@@ -10,6 +10,7 @@
 int process_format(const char *format, va_list *args)
 {
 	int i = 0, count = 0, printed;
+	int flags;
 
 	while (format[i])
 	{
@@ -18,7 +19,21 @@ int process_format(const char *format, va_list *args)
 			i++;
 			if (!format[i])
 				return (-1);
-			printed = handle_conversion(format[i], args);
+			flags = 0;
+			/* Parse flag characters */
+			while (format[i] == '+' || format[i] == ' ' || format[i] == '#')
+			{
+				if (format[i] == '+')
+					flags |= FLAG_PLUS;
+				else if (format[i] == ' ')
+					flags |= FLAG_SPACE;
+				else if (format[i] == '#')
+					flags |= FLAG_HASH;
+				i++;
+			}
+			if (!format[i])
+				return (-1);
+			printed = handle_conversion(format[i], args, flags);
 			if (printed < 0)
 				return (-1);
 			count += printed;
