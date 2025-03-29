@@ -2,138 +2,123 @@
 
 /**
  * handle_conversion - Handles conversion specifiers with flag, length,
- *                     field width, and precision support.
+ * field width, and precision support.
  * @specifier: The conversion specifier.
- * @args: A pointer to the list of arguments.
- * @flags: Bitwise OR of flags (+, space, #, 0, -).
- * @length: The length modifier (LENGTH_NONE, LENGTH_H, LENGTH_L).
- * @width: The field width.
- * @precision: The precision value (-1 if not specified).
+ * @args: Pointer to the list of arguments.
+ * @flags: Bitwise OR of flags.
+ * @length: Length modifier.
+ * @width: Field width.
+ * @precision: Precision value (-1 if not specified).
  *
- * Return: Number of characters printed for the conversion.
+ * Return: Number of characters printed.
  */
-int handle_conversion(char specifier, va_list *args, int flags,
-		      int length, int width, int precision)
+int handle_conversion(char specifier, va_list *args, int flags, int length,
+		      int width, int precision)
 {
-	int count = 0, pad = 0, i = 0, real_count = 0, len = 0;
-	va_list args_copy;
+	int count = 0, i;
 
-	switch (specifier)
+	if (specifier == 'd' || specifier == 'i')
 	{
-		case 'c':
+		long num;
+		int negative = 0;
+		char num_buf[50];
+		int pos = 0, num_digits, zeros = 0, pad_zeros = 0, spaces = 0;
+		int sign_len = 0;
+		char sign_char = '\0';
+
+		if (length == LENGTH_L)
+			num = va_arg(*args, long int);
+		else
+			num = va_arg(*args, int);
+		if (num < 0)
 		{
-			int ch;
-			pad = (width > 1) ? width - 1 : 0;
-			if (!(flags & FLAG_MINUS))
-			{
-				for (i = 0; i < pad; i++)
-					count += buffered_putchar(' ');
-			}
-			ch = va_arg(*args, int);
-			count += buffered_putchar(ch);
-			if (flags & FLAG_MINUS)
-			{
-				for (i = 0; i < pad; i++)
-					count += buffered_putchar(' ');
-			}
-			break;
+			negative = 1;
+			num = -num;
 		}
-		case 's':
+		if (num == 0)
+			num_buf[pos++] = '0';
+		else
 		{
-			char *s = va_arg(*args, char *);
-			int str_len = 0;
-			if (s == NULL)
-				s = "(null)";
-			while (s[str_len])
-				str_len++;
-			if (precision >= 0 && precision < str_len)
-				str_len = precision;
-			pad = (width > str_len) ? width - str_len : 0;
-			if (!(flags & FLAG_MINUS))
+			while (num)
 			{
-				for (i = 0; i < pad; i++)
-					count += buffered_putchar(' ');
+				num_buf[pos++] = (num % 10) + '0';
+				num /= 10;
 			}
-			for (i = 0; i < str_len; i++)
-				count += buffered_putchar(s[i]);
-			if (flags & FLAG_MINUS)
-			{
-				for (i = 0; i < pad; i++)
-					count += buffered_putchar(' ');
-			}
-			break;
 		}
-		case '%':
+		if (precision == 0 && pos == 1 && num_buf[0] == '0')
+			pos = 0;
+		num_digits = pos;
+		if (negative)
 		{
-			pad = (width > 1) ? width - 1 : 0;
-			if (!(flags & FLAG_MINUS))
-			{
-				for (i = 0; i < pad; i++)
-					count += buffered_putchar(' ');
-			}
-			count += buffered_putchar('%');
-			if (flags & FLAG_MINUS)
-			{
-				for (i = 0; i < pad; i++)
-					count += buffered_putchar(' ');
-			}
-			break;
+			sign_len = 1;
+			sign_char = '-';
 		}
-		case 'd':
-		case 'i':
+		else if (flags & FLAG_PLUS)
 		{
-			va_copy(args_copy, *args);
-			g_count_mode = 1;
-			g_dummy_count = 0;
-			if (length == LENGTH_L)
-				print_long_number(va_arg(args_copy, long int));
-			else if (length == LENGTH_H)
-				print_number((short int)va_arg(args_copy, int));
+			sign_len = 1;
+			sign_char = '+';
+		}
+		else if (flags & FLAG_SPACE)
+		{
+			sign_len = 1;
+			sign_char = ' ';
+		}
+		if (precision > num_digits)
+			zeros = precision - num_digits;
+		else
+			zeros = 0;
+		if (precision < 0 && (flags & FLAG_ZERO) && !(flags & FLAG_MINUS) &&
+		    width > (sign_len + num_digits))
+			pad_zeros = width - (sign_len + num_digits);
+		else
+			pad_zeros = 0;
+		{
+			int temp = (num_digits > zeros) ? num_digits : zeros;
+			int total_num_len = sign_len + temp;
+
+			if (pad_zeros > total_num_len)
+				total_num_len = pad_zeros + sign_len + num_digits;
+			if (width > total_num_len)
+				spaces = width - total_num_len;
 			else
-				print_number(va_arg(args_copy, int));
-			len = g_dummy_count;
-			g_count_mode = 0;
-			va_end(args_copy);
-			if (precision > len)
-				len = precision;
-			pad = (width > len) ? width - len : 0;
-			if (!(flags & FLAG_MINUS) && (flags & FLAG_ZERO) && precision < 0)
-			{
-				for (i = 0; i < pad; i++)
-					real_count += buffered_putchar('0');
-			}
-			else
-			{
-				for (i = 0; i < pad; i++)
-					real_count += buffered_putchar(' ');
-			}
-			if (length == LENGTH_L)
-				real_count += print_long_number(va_arg(*args, long int));
-			else if (length == LENGTH_H)
-				real_count += print_number((short int)va_arg(*args, int));
-			else
-				real_count += print_number(va_arg(*args, int));
-			if (flags & FLAG_MINUS)
-			{
-				for (i = 0; i < pad; i++)
-					real_count += buffered_putchar(' ');
-			}
-			count = real_count;
-			break;
+				spaces = 0;
 		}
-		case 'r':
+		if (!(flags & FLAG_MINUS))
 		{
-			count = print_reversed(*args);
-			break;
+			for (i = 0; i < spaces; i++)
+			{
+				buffered_putchar(' ');
+				count++;
+			}
 		}
-		case 'R':
+		if (sign_len)
 		{
-			count = print_rot13(*args);
-			break;
+			buffered_putchar(sign_char);
+			count++;
 		}
-		default:
-			count = handle_default(specifier);
-			break;
+		{
+			int zeros_to_print = (pad_zeros > 0) ? pad_zeros : zeros;
+
+			for (i = 0; i < zeros_to_print; i++)
+			{
+				buffered_putchar('0');
+				count++;
+			}
+		}
+		for (i = num_digits - 1; i >= 0; i--)
+		{
+			buffered_putchar(num_buf[i]);
+			count++;
+		}
+		if (flags & FLAG_MINUS)
+		{
+			for (i = 0; i < spaces; i++)
+			{
+				buffered_putchar(' ');
+				count++;
+			}
+		}
+		return (count);
 	}
-	return (count);
+	return (handle_default(specifier));
 }
