@@ -2,7 +2,7 @@
 
 ## DESCRIPTION
 
-- The _printf function processes a format string along with a variable number of arguments to produce formatted output. It supports:
+- The `_printf` function processes a format string along with a variable number of arguments to produce formatted output. It supports:
 
 ### Basic Conversion Specifiers
 
@@ -47,7 +47,7 @@
 
 - Buffering: Uses a local buffer of 1024 characters to reduce the number of calls to write.
 
-- Overall, _printf closely mimics the behavior of the standard printf function while incorporating additional custom features.
+- Overall, `_printf` closely mimics the behavior of the standard printf function while incorporating additional custom features.
   
 
 ## RETURN VALUE
@@ -67,7 +67,7 @@ These conversion specifiers provide flexibility in formatting and displaying dif
 
 ## Usage
 
-- All the files are to be compiled on Ubuntu 22.04 Compile your code with `gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c` Include the "main.h" header file on the functions using the _printf().
+- All the files are to be compiled on Ubuntu 22.04 Compile your code with `gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c` Include the "main.h" header file on the functions using the `_printf()`.
 
 
 - If you have a test file (e.g., `main.c`), compile and run it as follows:
@@ -160,7 +160,7 @@ _printf("ROT13: %R\n", "Hello");           // Output: Uryyb
 
 - Below is an overview of key functions and their purposes. (Adjust function names if your implementation differs.)
 
-_printf
+`_printf`
 
 ```
 int _printf(const char *format, ...);
@@ -207,7 +207,7 @@ int _printf(const char *format, ...);
 
 ## MAN PAGE
 
-- A manual page for the _printf function is provided in the file `man_3_printf`. To view it locally:
+- A manual page for the `_printf` function is provided in the file `man_3_printf`. To view it locally:
 
 ```
 man ./man_3_printf
@@ -222,7 +222,7 @@ man ./man_3_printf
 
 ## SEE ALSO
 
-man_3_printf
+`man_3_printf`
 
 ---
 
@@ -230,8 +230,8 @@ man_3_printf
 
 - Mohammed Al-Qabas
 
-mohammed.alqabas@holbertonstudents.com
+`mohammed.alqabas@holbertonstudents.com`
 
 - Abrar Al-Mukhlifi
 
-abrar.almukhlifi@holbertonstudents.com
+`abrar.almukhlifi@holbertonstudents.com`
