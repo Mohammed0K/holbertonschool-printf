@@ -1,9 +1,5 @@
 # printf
 
-- ### A custom implementation of the C standard `printf` function.
-
-
-
 ## DESCRIPTION
 
 - The _printf function processes a format string along with a variable number of arguments to produce formatted output. It supports:
@@ -17,13 +13,13 @@
 
 ### Integer Conversion Specifiers
 
-- Print integers `%d` and `%d`
+- Print integers `%d` and `%i`
 
 
 ### Custom Conversion Specifiers
 
 - Print an unsigned integer in binary `%b`
-- Print a string, with non-printable characters represented as `%x` followed by their two-digit uppercase hexadecimal value `%S`
+- Print a string. Non-printable characters (ASCII values less than 32 or greater than or equal to 127) are printed as `\x` followed by their two-digit uppercase hexadecimal representation. This conversion is enabled with the `%S` specifier.
 - Print the reversed string `%r`
 - Print the ROT13 encoded string `%R`
 
@@ -71,7 +67,7 @@ These conversion specifiers provide flexibility in formatting and displaying dif
 
 ## Usage
 
-- All the files are to be compiled on Ubuntu 22.04 Compile your code with gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c Include the "main.h" header file on the functions using the _printf().
+- All the files are to be compiled on Ubuntu 22.04 Compile your code with `gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c` Include the "main.h" header file on the functions using the _printf().
 
 
 - If you have a test file (e.g., `main.c`), compile and run it as follows:
@@ -79,8 +75,9 @@ These conversion specifiers provide flexibility in formatting and displaying dif
 
 
 ```
-gcc -Wall -Werror -Wextra -pedantic -std=gnu89 main.c -o main
-./main
+gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o _printf
+./_printf
+
 ```
 
 ---
@@ -108,12 +105,6 @@ int main(void)
 
 ---
 
-## NAME
-
-- _printf - A custom implementation of the C standard printf function.
-
----
-
 ## SYNOPSIS
 
 ```
@@ -131,33 +122,46 @@ _printf("Character: %c, String: %s, Number: %d\n", 'A', "Hello", 123);
 ## EXAMPLES
 
 ### Basic Output:
+
 ```
 _printf("Hello, World!\n");
 ```
+
 ### Output:
+
 ```
 Hello, World!
 ```
+
 ### Multiple Conversion Specifiers:
+
 ```
 _printf("Name: %s, Age: %d, Grade: %c\n", "Alice", 20, 'A');
 ```
+
 ### Output:
+
 ```
 Name: Alice, Age: 20, Grade: A
 ```
+
 ### Custom Specifiers:
+
 ```
 _printf("Binary: %b\n", 98);             // Output: 1100010
 _printf("Non-printable: %S\n", "Best\nSchool");  // Output: Best\x0ASchool
 _printf("Reversed: %r\n", "Hello");        // Output: olleH
 _printf("ROT13: %R\n", "Hello");           // Output: Uryyb
 ```
+
 ---
+
 ## FUNCTIONS AND PROTOTYPES
+
 - Below is an overview of key functions and their purposes. (Adjust function names if your implementation differs.)
 
 _printf
+
 ```
 int _printf(const char *format, ...);
 ```
