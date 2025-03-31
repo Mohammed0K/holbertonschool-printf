@@ -1,0 +1,72 @@
+.TH _PRINTF 3 "March 2025" "Holberton School" "_printf Manual"
+.SH NAME
+_printf \- formatted output conversion function
+.SH SYNOPSIS
+#include "main.h"
+.PP
+int _printf(const char *format, ...);
+.SH DESCRIPTION
+The _printf function processes a format string along with a variable number of arguments to produce formatted output. It is designed to closely mimic the behavior of the standard printf function, while also incorporating additional custom conversion specifiers as required by the project.
+
+.PP
+The function supports the following conversion specifiers:
+.IP "%c" 4
+Prints a single character.
+.IP "%s" 4
+Prints a string.
+.IP "%%" 4
+Prints a percent sign.
+.IP "%d" 4
+Prints an integer in decimal notation.
+.IP "%i" 4
+Prints an integer in decimal notation.
+.IP "%b" 4
+Prints an unsigned integer in binary.
+.IP "%S" 4
+Prints a string. Non-printable characters (ASCII values less than 32 or greater than or equal to 127) are printed as \x followed by their two-digit uppercase hexadecimal representation.
+.IP "%r" 4
+Prints the reversed string.
+.IP "%R" 4
+Prints the ROT13 encoded string.
+.IP "%u" 4
+Prints an unsigned integer.
+.IP "%o" 4
+Prints an unsigned integer in octal notation.
+.IP "%x" 4
+Prints an unsigned integer in hexadecimal (lowercase).
+.IP "%X" 4
+Prints an unsigned integer in hexadecimal (uppercase).
+.IP "%p" 4
+Prints a pointer address.
+
+.PP
+In addition, _printf supports several formatting options:
+.IP "Flags:" 4
+Supports flags such as '+' (force sign), space (prefix a space for positive numbers), and '#' (alternate form) for numeric conversions.
+.IP "Field Width & Precision:" 4
+Allows specification of a minimum field width and precision for formatting numbers and strings.
+.IP "Length Modifiers:" 4
+Supports length modifiers 'l' and 'h' for applicable conversion specifiers.
+.PP
+Buffering is implemented using a local buffer of 1024 characters. This approach minimizes the number of system calls to write, thereby improving performance.
+
+.SH RETURN VALUE
+On success, _printf returns the total number of characters printed (excluding the terminating null byte).  
+On error, it returns a negative value.
+
+.SH ERRORS
+Errors may occur due to invalid format specifiers or output failures. In such cases, _printf returns a negative value.
+
+.SH EXAMPLES
+An example usage of _printf:
+.IP
+_printf("Character: %c\nString: %s\nPercent: %%\nInteger: %d\nBinary: %b\n", 'A', "Hello, World!", 123, 5);
+.SH FILES
+The header file
+.IP
+main.h
+.PP
+must be included, as it contains the necessary function prototypes and type definitions (such as the specifier_t structure) required for the implementation of _printf and its helper functions.
+
+.SH AUTHORS
+Written by Mohammed Al-Qabas students.
