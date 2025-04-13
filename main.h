@@ -55,4 +55,4 @@ void flush_buffer(void);
 extern int g_count_mode;
 extern int g_dummy_count;
 
-#endif 
+#endif
